@@ -1,0 +1,22 @@
+{
+  "AC2.py": {
+    "avg_episodes": 150,
+    "model_size": 1000
+  },
+  "REINFORCE.py": {
+    "avg_episodes": 200,
+    "model_size": 1200
+  },
+  "DQN.py": {
+    "avg_episodes": 200,
+    "model_size": 1200
+  },
+  "PPO.py": {
+    "avg_episodes": 512,
+    "model_size": 2051
+  },
+  "ACER.py": {
+    "avg_episodes": 628,
+    "model_size": 2308
+  }
+}
