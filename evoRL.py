@@ -5,6 +5,7 @@
     very cool nevertheless. 
 """
 
+import concurrent.futures
 import json
 import os
 import random
@@ -57,6 +58,7 @@ class EvoPrompting:
         seed_files = [f for f in os.listdir(self.seed_folder) if f.endswith('.py')]
 
         for seed_file in seed_files:
+            print("EVALUATING SEED: ", seed_file)
             seed_file_path = os.path.join(self.seed_folder, seed_file)
             seed_code = self.read_seed_files(seed_file_path)
 
@@ -103,7 +105,7 @@ class EvoPrompting:
 
     def generate_child (self, prompt):
         child_code = openai.Completion.create(
-            model="text-davinci-003",
+            model="gpt-4",
             prompt=prompt,
             temperature=np.random.choice(self.temperatures, size=1, replace=True).item(),
             n=1,
@@ -114,14 +116,24 @@ class EvoPrompting:
         
 
     def eval_t(self, code_segment):
-        sum_episodes = 0
-        for _ in range(self.n_evaluations):
+        def single_evaluation():
+            print("Executing code segment")
             exec(code_segment, globals())  # Add globals() here
             episodes, model_size = globals()['main'](self.environment)
-            sum_episodes += episodes
+            print(f"Finished executing code segment: episodes={episodes}, model_size={model_size}")
+            return episodes, model_size
 
-        avg_epsiodes = sum_episodes / self.n_evaluations
-        return avg_epsiodes, model_size
+        sum_episodes = 0
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            print("Submitting tasks to the thread pool")
+            futures = [executor.submit(single_evaluation) for _ in range(self.n_evaluations)]
+            for future in concurrent.futures.as_completed(futures):
+                episodes, model_size = future.result()
+                sum_episodes += episodes
+
+        avg_episodes = sum_episodes / self.n_evaluations
+        print(f"Average episodes: {avg_episodes}, Model size: {model_size}")
+        return avg_episodes, model_size
 
 
     def get_top(self, global_population):
@@ -198,28 +210,28 @@ class EvoPrompting:
 if __name__ == "__main__":
     # Initialize the EvoPrompting class
     T = 10 # Number of rounds
-    m = 2 # number of few-shot prompts per round
-    n = 2 # number of samples to generate per prompt,
+    m = 10 # number of few-shot prompts per round
+    n = 16 # number of samples to generate per prompt,
     k = 2 # number of in-context examples per prompt
     p = 1 # number of survivors to select per generation
     n_evaluations = 5 # Number of times to run each model
-    alpha = 20000 # TBD (cutoff fitness for evaluated children)
+    alpha = 600000 # TBD (cutoff fitness for evaluated children)
     task = "create a solution that genreates the best model with the smallest paramter size"
     environment = "CartPole-v1" # environment of the task
     seed_folder = "seeds" # Folder which contains al the initial seed architectures
     lm = "text-davinci-003" # Language model to use for prompt generation
 
-    target_model_factor = 0.90
+    target_model_factor = 0.90 
     target_episodes = 0.95
 
     evo_prompt = EvoPrompting(lm, task, seed_folder, environment, T, m, k, n, p, alpha,
                               n_evaluations, target_model_factor, target_episodes, seed_evaluation=True,
                               evaluation_path="seeds/pre_evaluated_seed_metrics.json")
     # Run the main evolutionary loop
-    # evo_prompt.evolve()
+    evo_prompt.evolve()
 
-    evo_prompt.initialize_population()
-    print("evorpompt Global Population: ", evo_prompt.global_population)
+    # evo_prompt.initialize_population()
+    # print("evorpompt Global Population: ", evo_prompt.global_population)
 
-    top = evo_prompt.get_top(global_population = evo_prompt.global_population)
-    print('top', top)
+    # top = evo_prompt.get_top(global_population = evo_prompt.global_population)
+    # print('top', top)

@@ -16,7 +16,7 @@ from torch.distributions import Categorical
 #Hyperparameters
 learning_rate = 0.0002
 gamma         = 0.98
-buffer_limit  = 6000  
+buffer_limit  = 6000
 rollout_len   = 10   
 batch_size    = 4     # Indicates 4 sequences per mini-batch (4*rollout_len = 40 samples total)
 c             = 1.0   # For truncating importance sampling ratio
@@ -146,7 +146,6 @@ def main(environment):
         
         if n_epi%print_interval==0 and n_epi!=0:
             average = score/print_interval
-            print("# of episode :{}, avg score : {:.1f}, buffer size : {}".format(n_epi, average, memory.size()))
             score = 0.0
             if average >= 500:
                 return n_epi, model_parameters

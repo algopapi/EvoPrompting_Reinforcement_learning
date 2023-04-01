@@ -58,7 +58,6 @@ def main(environment):
         pi.train_net()
         if n_epi%print_interval==0 and n_epi!=0:
             average = score/print_interval
-            print("# of episode :{}, avg score : {:.1f}".format(n_epi, average))
             score = 0.0
             if average >=  500:
                 return n_epi, model_parameters

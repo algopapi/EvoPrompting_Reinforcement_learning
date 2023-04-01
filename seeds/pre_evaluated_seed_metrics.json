@@ -12,11 +12,11 @@
     "model_size": 1200
   },
   "PPO.py": {
-    "avg_episodes": 512,
+    "avg_episodes": 348.0,
     "model_size": 2051
   },
   "ACER.py": {
-    "avg_episodes": 628,
+    "avg_episodes": 604.0,
     "model_size": 2308
   }
 }

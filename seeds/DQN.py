@@ -109,8 +109,6 @@ def main(environment):
         if n_epi%print_interval==0 and n_epi!=0:
             average = score/print_interval
             q_target.load_state_dict(q.state_dict())
-            print("n_episode :{}, score : {:.1f}, n_buffer : {}, eps : {:.1f}%".format(
-                                                            n_epi, average, memory.size(), epsilon*100))
             score = 0.0
             if average >  500:
               return n_epi, model_parameters
@@ -118,3 +116,5 @@ def main(environment):
     env.close()
     return n_epi, model_parameters
 
+if __name__ == '__main__':
+    main('CartPole-v1')
