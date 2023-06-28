@@ -1,6 +1,6 @@
 # EvoPrompt for Reinforcement Learning Architectures
 
-Using LLM's to improve their underlying architecture through an Evolutionary Algorithm is, besides being poetically satisfying, also proven to be quite effective. 
+Using LLM's to improve their underlying architecture through an Evolutionary Algorithm is, besides poetically satisfying, also proven to be quite effective. 
 
 EvoPrompting on Reinforcement Learning Architectures aims to create novel reinforcement learning (RL) algorithms by incorporating an evolutionary algorithm with a large language model (LLM) as a crossover operator.
 
